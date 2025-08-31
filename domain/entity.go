@@ -1,10 +1,13 @@
 package domain
 
 type Article struct {
-  ID          uint    `json:"id" gorm:"primaryKey"`
-  Name        string  `json:"name"`
-  Body        string  `json:"body"`
-  Nice        int     `json:"nice"`
+  ID          uint      `json:"id" gorm:"primaryKey"`
+  Title       string    `json:"title"`
+  Contents    string    `json:"contents"`
+  UserName    string    `json:"user_name"`
+  CommentList []Comment `json:"comments"`
+  NiceNum     int       `json:"nice"`
+  CreatedAt   time.Time `json:"created_at"`
 }
 
 func NewArticle(ID ArticleID, name ArticleName, body ArticleBody) (Article, err) {
@@ -16,4 +19,11 @@ func NewArticle(ID ArticleID, name ArticleName, body ArticleBody) (Article, err)
     body: body,
     nice: 0
   }
+}
+
+type Commnet struct {
+  CommentID int       `json:"comment_id"`
+  ArticleID int       `json:"article_id"`
+  Message   string    `json:"message"`
+  CreatedAt time.Time `json:"created_at"`
 }
