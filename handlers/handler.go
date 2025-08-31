@@ -10,7 +10,7 @@ import (
 
 
 func HelloHandler(w http.ResponseWriter, req *http.Request) {
-  io.WriteString(w, "Hello world!\n")
+  io.WriteString(w, "Hello go world!\n")
 }
 
 func PostArticleHandler(w http.ResponseWriter, req *http.Request) {

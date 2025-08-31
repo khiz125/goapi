@@ -1,0 +1,18 @@
+# Stage 1: Build & Development Environment
+FROM golang:1.22.5-alpine AS dev_builder
+
+WORKDIR /app
+
+# airをインストール
+RUN go install github.com/air-verse/air@latest
+
+# 必要なGoモジュールをダウンロード
+COPY go.mod go.sum ./
+RUN go mod download
+
+# airと依存関係のインストール確認
+# RUN go env GOBIN
+
+# airを実行。カレントディレクトリに.air.tomlがあることを想定
+# 開発時にはソースコードがコンテナにマウントされる
+CMD ["air", "-c", ".air.toml"]
