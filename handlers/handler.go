@@ -5,6 +5,7 @@ import (
   "io"
   "net/http"
   "strconv"
+  "encoding/json"
   "github.com/gorilla/mux"
   "github.com/khiz125/goapi/mock"
 )
@@ -15,10 +16,10 @@ func HelloHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
-  article := mock.Article
+  article := mock.Article1
   jsonData, err := json.Marshal(article)
   if err != nil {
-    http.Error(w, "fail to encode json\n", htto.StatusInternalServerError)
+    http.Error(w, "fail to encode json\n", http.StatusInternalServerError)
     return
   }
 

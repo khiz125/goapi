@@ -2,7 +2,7 @@
 package domain
 
 import (
-  errors
+  "errors"
 )
 
 type ArticleNameVal string
@@ -13,7 +13,7 @@ func NewArticleName(val ArticleNameVal) (ArticleName, error) {
 	if val == "" {
 		return ArticleName{}, errors.New("invalid Article Name")
 	}
-	return Articlename{val: val}, nil
+	return ArticleName{val: val}, nil
 }
 
 type ArticleBodyVal string

@@ -1,16 +1,19 @@
 package mock
 
-import time
+import (
+  "time"
+  "github.com/khiz125/goapi/domain"
+)
 
 var (
-  Comment1 = Comment{
+  Comment1 = domain.Comment {
     CommentID: 1,
     ArticleID: 1,
     Message: "test comment1",
     CreatedAt: time.Now(),
   }
 
-  Comment2 = Comment{
+  Comment2 = domain.Comment {
     CommentID: 2,
     ArticleID: 1,
     Message: "second comment",
@@ -19,20 +22,23 @@ var (
 )
 
 var (
-  Article1 = Article { ID: 1,
+  Article1 = domain.Article { 
+    ID: 1,
     Title: "first article",
     Contents: "This is the test article.",
     UserName: "saki",
     NiceNum: 1,
-    CommentList: []Comment{Comment1, Comment2},
+    CommentList: []domain.Comment{Comment1, Comment2},
     CreatedAt: time.Now(),
   }
 
-  Article2 = Article {
-    ID: 2, Title: "second article",
+  Article2 = domain.Article {
+    ID: 2, 
+    Title: "second article",
     Contents: "This is the test article.",
     UserName: "saki",
     NiceNum: 2,
+    CommentList: []domain.Comment{Comment1, Comment2},
     CreatedAt: time.Now(),
   }
 )
