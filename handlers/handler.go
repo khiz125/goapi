@@ -29,7 +29,6 @@ func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 
 func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
   queryMap := req.URL.Query()
-
   var page int
   if p, ok := queryMap["page"]; ok && len(p) > 0 {
     var err error
@@ -41,26 +40,56 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
   } else {
     page = 1
   }
+  
+  articleList := []domain.Article{ mock.Article1, mock.Article2 }
+  jsonData, err := json.Marshal(articleList)
 
-  resString := fmt.Sprintf("Article List (page %d)\n", page)
-  io.WriteString(w, resString)
+  if err != nil {
+    errMsg := fmt.Sprintf("failed to encode json (page %d)\n", page)
+    http.Error(w, errMsg, http.StatusInternalServerError)
+    return
+  }
+  
+  w.Write(jsonData[page])
 }
 
 func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
   articleID, err := strconv.Atoi(mux.Vars(req)["id"])
-  if (err != nil) {
+  if err != nil {
     http.Error(w, "Invalid query parameter", http.StatusBadRequest)
     return
   }
-  resString := fmt.Sprintf("Article No.%d\n", articleID)
-  io.WriteString(w, resString)
+  article := mock.Article1
+  jsonData, err := json.Marshal(article)
+
+  if err != nil {
+    errMsg := fmtSprintf("failed to encode json (articleID %d)\n", articleID)
+    http.Error(w, errMsg, http.StatusInternalServerError)
+    return
+  }
+
+  w.Write(jsonData)
 }
 
 func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
-  io.WriteString(w, "Posting Nice...\n")
+  article := mock.Article1
+  jsonData, err := json.Marshal(article)
+
+  if err != nil {
+    http.Error(w, "failed to encode json\n", httpStatusInternalServerError)
+    return
+  }
+
+  w.Write(jsonData)
 }
 
 func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
-  io.WriteString(w, "Posting Comment...\n")
+  comment = mock.Comment1
+  jsonData, err := json.Marshal(comment)
+  if err != nil {
+    http.Error(w, "failed to encode json\n", http.StatusInternalServerError)
+    return
+  }
+  w.Write(jsonData)
 }
 
