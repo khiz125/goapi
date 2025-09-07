@@ -6,8 +6,12 @@ import (
   "net/http"
   "strconv"
   "encoding/json"
+  "errors"
+
   "github.com/gorilla/mux"
+  
   "github.com/khiz125/goapi/mock"
+  "github.com/khiz125/goapi/domain"
 )
 
 
@@ -16,8 +20,32 @@ func HelloHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
-  article := mock.Article1
+
+  length, err := strconv.Atoi(req.Header.Get("Content-Length"))
+  if err != nil {
+    http.Error(w, "cannot get content length\n", http.StatusBadRequest)
+    return
+  }
+
+  reqBodybuffer := make([]byte, length)
+
+  if _, err := req.Body.Read(reqBodybuffer); !errors.Is(err, io.EOF) {
+    http.Error(w, "failed to get request body\n", http.StatusBadRequest)
+    return
+  }
+
+  defer req.Body.Close()
+
+  var reqArticle domain.Article
+
+  if err := json.Unmarshal(reqBodybuffer, &reqArticle); err != nil {
+    http.Error(w, "failed to decode json\n", http.StatusBadRequest)
+    return
+  }
+
+  article := reqArticle
   jsonData, err := json.Marshal(article)
+
   if err != nil {
     http.Error(w, "fail to encode json\n", http.StatusInternalServerError)
     return
@@ -50,7 +78,7 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
     return
   }
   
-  w.Write(jsonData[page])
+  w.Write(jsonData)
 }
 
 func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
@@ -63,7 +91,7 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
   jsonData, err := json.Marshal(article)
 
   if err != nil {
-    errMsg := fmtSprintf("failed to encode json (articleID %d)\n", articleID)
+    errMsg := fmt.Sprintf("failed to encode json (articleID %d)\n", articleID)
     http.Error(w, errMsg, http.StatusInternalServerError)
     return
   }
@@ -76,7 +104,7 @@ func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
   jsonData, err := json.Marshal(article)
 
   if err != nil {
-    http.Error(w, "failed to encode json\n", httpStatusInternalServerError)
+    http.Error(w, "failed to encode json\n", http.StatusInternalServerError)
     return
   }
 
@@ -84,7 +112,7 @@ func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
-  comment = mock.Comment1
+  comment := mock.Comment1
   jsonData, err := json.Marshal(comment)
   if err != nil {
     http.Error(w, "failed to encode json\n", http.StatusInternalServerError)

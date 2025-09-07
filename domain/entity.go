@@ -6,7 +6,7 @@ import (
 )
 
 type Article struct {
-  ID          uint      `json:"id" gorm:"primaryKey"`
+  ID          uint       `json:"id"`
   Title       string    `json:"title"`
   Contents    string    `json:"contents"`
   UserName    string    `json:"user_name"`
