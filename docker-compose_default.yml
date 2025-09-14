@@ -19,5 +19,18 @@ services:
     volumes:
       - db-volume:/var/lib/mysql
 
+  go:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    tty: true
+    command: /bin/sh -c "air -c .air.toml"
+
 volumes:
   db-volume:
