@@ -6,7 +6,7 @@ import (
 )
 
 type Article struct {
-	ID          uint      `json:"id"`
+	ID          int       `json:"id"`
 	Title       string    `json:"title"`
 	Contents    string    `json:"contents"`
 	UserName    string    `json:"user_name"`
@@ -15,7 +15,7 @@ type Article struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
-func NewArticle(ID uint, title string, contents string) (Article, error) {
+func NewArticle(ID int, title string, contents string) (Article, error) {
 	if title == "" || contents == "" {
 		return Article{}, errors.New("title and contents cannot be empty")
 	}
