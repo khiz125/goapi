@@ -38,8 +38,9 @@ func InsertArticle(db *sql.DB, article domain.Article) (domain.Article, error) {
 // get articles
 func SelectArticleList(db *sql.DB, page int) ([]domain.Article, error) {
 	const sqlStr = `
-  select select article_id, title, contents, username, nice 
-  from articles limit ? offset ?;
+  select article_id, title, contents, username, nice 
+  from articles 
+  limit ? offset ?;
   `
 
 	rows, err := db.Query(sqlStr, articleNumPerPage, ((page - 1) * articleNumPerPage))
