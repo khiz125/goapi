@@ -6,6 +6,10 @@ import (
 	"github.com/khiz125/goapi/domain"
 )
 
+const (
+	articleNumPerPage = 5
+)
+
 // create new article
 func InsertArticle(db *sql.DB, article domain.Article) (domain.Article, error) {
 	const sqlStr = `
@@ -17,7 +21,7 @@ func InsertArticle(db *sql.DB, article domain.Article) (domain.Article, error) {
   `
 
 	var newArticle domain.Article
-	newArticle.Title, newArticle.Contents, newArticle.article.UserName = article.Title, article.Contents, article.UserName
+	newArticle.Title, newArticle.Contents, newArticle.UserName = article.Title, article.Contents, article.UserName
 
 	result, err := db.Exec(sqlStr, article.Title, article.Contents, article.UserName)
 	if err != nil {
@@ -34,10 +38,11 @@ func InsertArticle(db *sql.DB, article domain.Article) (domain.Article, error) {
 // get articles
 func SelectArticleList(db *sql.DB, page int) ([]domain.Article, error) {
 	const sqlStr = `
-  select * from articles limit ? offset ?;
+  select select article_id, title, contents, username, nice 
+  from articles limit ? offset ?;
   `
 
-	rows, err := db.Exec(sqlStr, articleNumPerPage, ((page - 1) * articleNumPerPage))
+	rows, err := db.Query(sqlStr, articleNumPerPage, ((page - 1) * articleNumPerPage))
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +63,8 @@ func SelectArticleList(db *sql.DB, page int) ([]domain.Article, error) {
 // get article with id
 func SelectArticleDetail(db *sql.DB, articleID int) (domain.Article, error) {
 	const sqlStr = `
-  select * from articles where article_id = ?;
+  select article_id, title, contents, username, nice, created_at 
+  from articles where article_id = ?;
   `
 
 	row := db.QueryRow(sqlStr, articleID)
@@ -68,7 +74,7 @@ func SelectArticleDetail(db *sql.DB, articleID int) (domain.Article, error) {
 
 	var article domain.Article
 	var createdTime sql.NullTime
-	err := row.Scan(&articleID, &article.Title, &article.Contents, &article.UserName, &article.NiceNum, &createdTime)
+	err := row.Scan(&article.ID, &article.Title, &article.Contents, &article.UserName, &article.NiceNum, &createdTime)
 	if err != nil {
 		return domain.Article{}, err
 	}
