@@ -3,14 +3,13 @@ package handlers
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 
 	"github.com/khiz125/goapi/domain"
-	"github.com/khiz125/goapi/mock"
+	"github.com/khiz125/goapi/services"
 )
 
 func HelloHandler(w http.ResponseWriter, req *http.Request) {
@@ -25,7 +24,11 @@ func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "failed to decode json\n", http.StatusBadRequest)
 	}
 
-	article := reqArticle
+	article, err := services.PostArticleService(reqArticle)
+	if err != nil {
+		http.Error(w, "failed to internal exec\n", http.StatusInternalServerError)
+		return
+	}
 
 	json.NewEncoder(w).Encode(article)
 }
@@ -43,9 +46,12 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 	} else {
 		page = 1
 	}
-	log.Println(page) // FIX ME
 
-	articleList := []domain.Article{mock.Article1, mock.Article2}
+	articleList, err := services.GetArticleListService(page)
+	if err != nil {
+		http.Error(w, "failed to internal exec\n", http.StatusInternalServerError)
+		return
+	}
 
 	json.NewEncoder(w).Encode(articleList)
 }
@@ -58,9 +64,11 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	log.Println(articleID) // FIX ME
-
-	article := mock.Article1
+	article, err := services.GetArticleService(articleID)
+	if err != nil {
+		http.Error(w, "failed to internal exex\n", http.StatusInternalServerError)
+		return
+	}
 
 	json.NewEncoder(w).Encode(article)
 
@@ -73,7 +81,11 @@ func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "failed to decode json\n", http.StatusBadRequest)
 	}
 
-	article := reqArticle
+	article, err := services.PostNiceService(reqArticle)
+	if err != nil {
+		http.Error(w, "failed to internal exec\n", http.StatusInternalServerError)
+		return
+	}
 	json.NewEncoder(w).Encode(article)
 }
 
@@ -83,6 +95,10 @@ func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
 	if err := json.NewDecoder(req.Body).Decode(&reqComment); err != nil {
 		http.Error(w, "failed to decode json\n", http.StatusBadRequest)
 	}
-	comment := reqComment
+	comment, err := services.PostCommentService(reqComment)
+	if err != nil {
+		http.Error(w, "failed to internal exec\n", http.StatusInternalServerError)
+		return
+	}
 	json.NewEncoder(w).Encode(comment)
 }

@@ -6,7 +6,7 @@ import (
 )
 
 type Article struct {
-	ID          int       `json:"id"`
+	ID          int       `json:"article_id"`
 	Title       string    `json:"title"`
 	Contents    string    `json:"contents"`
 	UserName    string    `json:"user_name"`

@@ -53,7 +53,7 @@ func SelectArticleList(db *sql.DB, page int) ([]domain.Article, error) {
 	articleArray := make([]domain.Article, 0)
 	for rows.Next() {
 		var article domain.Article
-		rows.Scan(&article.ID, &article.Title, &article.Contents, &article.UserName, &article.NiceNum, &article.CreatedAt)
+		rows.Scan(&article.ID, &article.Title, &article.Contents, &article.UserName, &article.NiceNum)
 
 		articleArray = append(articleArray, article)
 	}
@@ -64,7 +64,7 @@ func SelectArticleList(db *sql.DB, page int) ([]domain.Article, error) {
 // get article with id
 func SelectArticleDetail(db *sql.DB, articleID int) (domain.Article, error) {
 	const sqlStr = `
-  select article_id, title, contents, username, nice, created_at 
+  select * 
   from articles where article_id = ?;
   `
 

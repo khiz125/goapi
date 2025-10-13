@@ -73,11 +73,11 @@ func PostNiceService(article domain.Article) (domain.Article, error) {
 	}
 
 	return domain.Article{
-		ID:    article.ID,
-		Title: article.Title
-    Contents: article.Contents,
-    UserName: article.UserName,
-    NiceNum: article.NiceNum,
-    CreatedAt: article.CreatedAt,
-  }, nil
+		ID:        article.ID,
+		Title:     article.Title,
+		Contents:  article.Contents,
+		UserName:  article.UserName,
+		NiceNum:   article.NiceNum + 1,
+		CreatedAt: article.CreatedAt,
+	}, nil
 }

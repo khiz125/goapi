@@ -20,3 +20,16 @@ var ArticleTestData = []domain.Article{
 		NiceNum:  1,
 	},
 }
+
+var CommentTestData = []models.Comment{
+	domain.Comment{
+		CommentID: 1,
+		ArticleID: 1,
+		Message:   "1st comment yeah",
+	},
+	domain.Comment{
+		CommentID: 2,
+		ArticleID: 1,
+		Message:   "welcome",
+	},
+}
