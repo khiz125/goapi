@@ -5,20 +5,14 @@ import (
 	"github.com/khiz125/goapi/repositories"
 )
 
-func GetArticleService(articleID int) (domain.Article, error) {
+func (s *AppService) GetArticleService(articleID int) (domain.Article, error) {
 
-	db, err := connectDB()
-	if err != nil {
-		return domain.Article{}, err
-	}
-	defer db.Close()
-
-	article, err := repositories.SelectArticleDetail(db, articleID)
+	article, err := repositories.SelectArticleDetail(s.db, articleID)
 	if err != nil {
 		return domain.Article{}, err
 	}
 
-	commentList, err := repositories.SelectCommentList(db, articleID)
+	commentList, err := repositories.SelectCommentList(s.db, articleID)
 	if err != nil {
 		return domain.Article{}, err
 	}
@@ -28,31 +22,19 @@ func GetArticleService(articleID int) (domain.Article, error) {
 	return article, nil
 }
 
-func GetArticleListService(page int) ([]domain.Article, error) {
-	db, err := connectDB()
+func (s *AppService) GetArticleListService(page int) ([]domain.Article, error) {
+
+	articleList, err := repositories.SelectArticleList(s.db, page)
 	if err != nil {
 		return nil, err
 	}
 
-	defer db.Close()
-
-	artcleList, err := repositories.SelectArticleList(db, page)
-	if err != nil {
-		return nil, err
-	}
-
-	return artcleList, nil
+	return articleList, nil
 }
 
-func PostArticleService(article domain.Article) (domain.Article, error) {
-	db, err := connectDB()
-	if err != nil {
-		return domain.Article{}, err
-	}
+func (s *AppService) PostArticleService(article domain.Article) (domain.Article, error) {
 
-	defer db.Close()
-
-	newArticle, err := repositories.InsertArticle(db, article)
+	newArticle, err := repositories.InsertArticle(s.db, article)
 	if err != nil {
 		return domain.Article{}, err
 	}
@@ -60,14 +42,9 @@ func PostArticleService(article domain.Article) (domain.Article, error) {
 	return newArticle, nil
 }
 
-func PostNiceService(article domain.Article) (domain.Article, error) {
-	db, err := connectDB()
-	if err != nil {
-		return domain.Article{}, err
-	}
-	defer db.Close()
+func (s *AppService) PostNiceService(article domain.Article) (domain.Article, error) {
 
-	err = repositories.UpdateNiceNum(db, article.ID)
+	err := repositories.UpdateNiceNum(s.db, article.ID)
 	if err != nil {
 		return domain.Article{}, err
 	}
