@@ -9,8 +9,8 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/gorilla/mux"
 	"github.com/khiz125/goapi/controllers"
+	"github.com/khiz125/goapi/routers"
 	"github.com/khiz125/goapi/services"
 )
 
@@ -31,14 +31,7 @@ func main() {
 
 	service := services.NewAppService(db)
 	controller := controllers.NewAppController(service)
-	r := mux.NewRouter()
-
-	r.HandleFunc("/hello", controller.HelloHandler).Methods(http.MethodGet)
-	r.HandleFunc("/article", controller.PostArticleHandler).Methods(http.MethodPost)
-	r.HandleFunc("/article/list", controller.ArticleListHandler).Methods(http.MethodGet)
-	r.HandleFunc("/article/{id:[0-9]+}", controller.ArticleDetailHandler).Methods(http.MethodGet)
-	r.HandleFunc("/article/nice", controller.PostNiceHandler).Methods(http.MethodPost)
-	r.HandleFunc("/comment", controller.PostCommentHandler).Methods(http.MethodPost)
+	r := routers.NewRouter(controller)
 
 	log.Println("Server start at port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
