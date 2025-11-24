@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/khiz125/goapi/api/middlewares"
 	"github.com/khiz125/goapi/controllers"
 	"github.com/khiz125/goapi/services"
 )
@@ -23,6 +24,8 @@ func NewRouter(db *sql.DB) *mux.Router {
 	r.HandleFunc("/article/nice", articleController.PostNiceHandler).Methods(http.MethodPost)
 
 	r.HandleFunc("/comment", commentController.PostCommentHandler).Methods(http.MethodPost)
+
+	r.Use(middlewares.LoggingMiddleware)
 
 	return r
 
