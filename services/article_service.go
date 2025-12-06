@@ -10,7 +10,7 @@ import (
 	"github.com/khiz125/goapi/repositories"
 )
 
-func (s *AppService) GetArticleService(articleID int) (domain.Article, error) {
+func (s *AppService) GetArticleServiceWithSync(articleID int) (domain.Article, error) {
 	var article domain.Article
 	var commentList []domain.Comment
 	var articleGetErr, commentListGetErr error
@@ -48,6 +48,63 @@ func (s *AppService) GetArticleService(articleID int) (domain.Article, error) {
 
 	if commentListGetErr != nil {
 		err := apperrors.GetDataFailed.Wrap(commentListGetErr, "failed to get data")
+		return domain.Article{}, err
+	}
+
+	article.CommentList = append(article.CommentList, commentList...)
+
+	return article, nil
+}
+
+func (s *AppService) GetArticleService(articleID int) (domain.Article, error) {
+	var article domain.Article
+	var commentList []domain.Comment
+	var articleGetErr, commentGetErr error
+
+	type articleResult struct {
+		article domain.Article
+		err     error
+	}
+	type commentResult struct {
+		commentList *[]domain.Comment
+		err         error
+	}
+
+	articleCh := make(chan articleResult)
+	defer close(articleCh)
+	commentCh := make(chan commentResult)
+	defer close(commentCh)
+
+	go func(ch chan<- articleResult, db *sql.DB, articleID int) {
+		article, err := repositories.SelectArticleDetail(s.db, articleID)
+		ch <- articleResult{article: article, err: err}
+	}(articleCh, s.db, articleID)
+
+	go func(ch chan<- commentResult, db *sql.DB, articleID int) {
+		commentList, err := repositories.SelectCommentList(s.db, articleID)
+		ch <- commentResult{commentList: &commentList, err: err}
+	}(commentCh, s.db, articleID)
+
+	for i := 0; i < 2; i++ {
+		select {
+		case ar := <-articleCh:
+			article, articleGetErr = ar.article, ar.err
+		case cr := <-commentCh:
+			commentList, commentGetErr = *cr.commentList, cr.err
+		}
+	}
+
+	if articleGetErr != nil {
+		if errors.Is(articleGetErr, sql.ErrNoRows) {
+			err := apperrors.NAData.Wrap(articleGetErr, "data is not found")
+			return domain.Article{}, err
+		}
+		err := apperrors.GetDataFailed.Wrap(articleGetErr, "failed to get data")
+		return domain.Article{}, err
+	}
+
+	if commentGetErr != nil {
+		err := apperrors.GetDataFailed.Wrap(commentGetErr, "failed to get data")
 		return domain.Article{}, err
 	}
 
