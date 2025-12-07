@@ -21,12 +21,16 @@ func (resw *resLoggingWriter) WriteHeader(code int) {
 
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		log.Println(req.RequestURI, req.Method)
+		traceID := newTraceID()
 
+		log.Printf("[%d]%s %s\n", traceID, req.RequestURI, req.Method)
+
+		ctx := SetTraceID(req.Context(), traceID)
+		req = req.WithContext(ctx)
 		reslogwrite := NewResLoggingWriter(w)
 
 		next.ServeHTTP(reslogwrite, req)
 
-		log.Println("response: ", reslogwrite.code)
+		log.Printf("[%d]response: %d", traceID, reslogwrite.code)
 	})
 }
