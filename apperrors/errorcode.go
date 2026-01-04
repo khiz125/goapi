@@ -17,4 +17,5 @@ const (
 	RequiredAuthorizationHeader ErrCode = "A001"
 	CannotMakeValidator         ErrCode = "A002"
 	Unauthorizated              ErrCode = "A003"
+  NotMatchUser                ErrCode = "A004"
 )
