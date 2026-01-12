@@ -8,7 +8,7 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
-
+	"github.com/joho/godotenv"
 	"github.com/khiz125/goapi/api"
 )
 
@@ -18,6 +18,12 @@ var (
 	dbDatabase = os.Getenv("DB_NAME")
 	dbConn     = fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s?parseTime=true", dbUser, dbPassword, dbDatabase)
 )
+
+func init() {
+  if err := godotenv.Load(); err != nil {
+    log.Println("env file not found")
+  }
+}
 
 func main() {
 
