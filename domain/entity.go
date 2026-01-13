@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"errors"
 	"time"
 )
 
@@ -13,21 +12,6 @@ type Article struct {
 	CommentList []Comment `json:"comments"`
 	NiceNum     int       `json:"nice"`
 	CreatedAt   time.Time `json:"created_at"`
-}
-
-func NewArticle(ID int, title string, contents string) (Article, error) {
-	if title == "" || contents == "" {
-		return Article{}, errors.New("title and contents cannot be empty")
-	}
-	return Article{
-		ID:          ID,
-		Title:       title,
-		Contents:    contents,
-		UserName:    "default_user", // デフォルトのユーザー名
-		CommentList: []Comment{},
-		NiceNum:     0,
-		CreatedAt:   time.Now(),
-	}, nil
 }
 
 type Comment struct {
