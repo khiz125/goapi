@@ -36,11 +36,29 @@ func (c *GoogleAuthController) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *GoogleAuthController) CallBack(w http.ResponseWriter, r *http.Request) {
-  w.WriteHeader(http.StatusOK)
-  w.Write([]byte("TODO add callback method"))
+	query := r.URL.Query()
+	code := query.Get("code")
+	state := query.Get("state")
+
+	if code == "" || state == "" {
+		http.Error(w, "missing code or state", http.StatusBadRequest)
+		return
+	}
+
+	cookie, err := r.Cookie("auth_state")
+	if err != nil {
+		http.Error(w, "state cookier not found", http.StatusBadRequest)
+		return
+	}
+
+	if cookie.Value != state {
+		http.Error(w, "invalid state", http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+  w.Write([]byte("state validation OK"))  // TODO: call service
 }
-
-
 
 func generateState() string {
 	b := make([]byte, 32)
