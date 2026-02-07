@@ -9,8 +9,9 @@ type GoogleAuthConfig struct {
 }
 
 func LoadGoogleOAuthConfig() GoogleAuthConfig {
-	return GoogleAuthConfig{AuthURL: os.Getenv("GOOGLE_OAUTH_AUTH_URL"),
-		ClientID:    os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
-		RedirectURI: os.Getenv("GOOGLE_OAUTH_REDIRECT_URI"),
+	return GoogleAuthConfig{
+    AuthURL:      os.Getenv("GOOGLE_OAUTH_AUTH_URL"),
+		ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
+		RedirectURI:  os.Getenv("GOOGLE_OAUTH_REDIRECT_URI"),
 	}
 }
