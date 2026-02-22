@@ -16,6 +16,12 @@ const (
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+
+		if strings.HasPrefix(req.URL.Path, "/auth/") {
+			next.ServeHTTP(w, req)
+      return
+		}
+
 		authorization := req.Header.Get("Authorization")
 
 		authHeaders := strings.Fields(authorization)
