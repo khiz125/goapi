@@ -1,17 +1,16 @@
-package infrastructure
+package repositories
 
 import (
 	"database/sql"
-
 	"github.com/khiz125/goapi/domain/user"
 )
 
 type UserRepository struct {
-	db *sql.DB
+	tx *sql.Tx
 }
 
-func NewUserRepository(db *sql.DB) *UserRepository {
-	return &UserRepository{db: db}
+func NewUserRepository(tx *sql.Tx) *UserRepository {
+	return &UserRepository{tx: tx}
 }
 
 func (r *UserRepository) Create(u *user.User) error {
@@ -21,7 +20,7 @@ func (r *UserRepository) Create(u *user.User) error {
   VALUES (?,?,?,?)
   `
 
-	_, err := r.db.Exec(
+	_, err := r.tx.Exec(
 		query,
 		u.ID,
 		u.Name,
@@ -41,7 +40,7 @@ func (r *UserRepository) FindByID(id string) (*user.User, error) {
 
 	u := &user.User{}
 
-	err := r.db.QueryRow(query, id).Scan(&u.ID, &u.Name, &u.Email, &u.CreatedAt)
+	err := r.tx.QueryRow(query, id).Scan(&u.ID, &u.Name, &u.Email, &u.CreatedAt)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -67,7 +66,7 @@ func (r *UserRepository) FindByGoogleSub(sub string) (*user.User, error) {
 
 	u := &user.User{}
 
-	err := r.db.QueryRow(query, sub).Scan(&u.ID, &u.Name, &u.Email, &u.CreatedAt)
+	err := r.tx.QueryRow(query, sub).Scan(&u.ID, &u.Name, &u.Email, &u.CreatedAt)
 
 	if err == sql.ErrNoRows {
 		return nil, nil

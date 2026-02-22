@@ -1,4 +1,4 @@
-package auth
+package controllers
 
 import (
 	"crypto/rand"
@@ -7,15 +7,18 @@ import (
 	"net/url"
 
 	"github.com/khiz125/goapi/config"
+	"github.com/khiz125/goapi/services/auth"
 )
 
 type GoogleAuthController struct {
 	oauthConfig config.GoogleAuthConfig
+	authService *auth.AuthService
 }
 
-func NewGoogleAuthController(cfg config.GoogleAuthConfig) *GoogleAuthController {
+func NewGoogleAuthController(cfg config.GoogleAuthConfig, authService *auth.AuthService) *GoogleAuthController {
 	return &GoogleAuthController{
 		oauthConfig: cfg,
+		authService: authService,
 	}
 }
 
@@ -45,7 +48,7 @@ func (c *GoogleAuthController) CallBack(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	cookie, err := r.Cookie("auth_state")
+	cookie, err := r.Cookie("oauth_state")
 	if err != nil {
 		http.Error(w, "state cookier not found", http.StatusBadRequest)
 		return
@@ -56,8 +59,19 @@ func (c *GoogleAuthController) CallBack(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	http.SetCookie(w, &http.Cookie{
+		Name:   "oauth_state",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	})
+
+	user, err := c.authService.HandleGoogleCallback(r.Context(), code)
+	if err != nil {
+		http.Error(w, "auth failed", http.StatusInternalServerError)
+	}
 	w.WriteHeader(http.StatusOK)
-  w.Write([]byte("state validation OK"))  // TODO: call service
+	w.Write([]byte("Hello " + user.Name))
 }
 
 func generateState() string {
@@ -74,5 +88,5 @@ func (c *GoogleAuthController) buildGoogleAuthURL(state string) string {
 	v.Set("scope", "openid profile email")
 	v.Set("state", state)
 
-	return c.oauthConfig.AuthURL + "?" + v.Encode()
+	return config.GoogleAuthURL + "?" + v.Encode()
 }

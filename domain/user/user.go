@@ -8,3 +8,8 @@ type User struct {
 	Email     *string
 	CreatedAt time.Time
 }
+
+type Repositories struct {
+	User     UserRepository
+	Identity IdentityRepository
+}

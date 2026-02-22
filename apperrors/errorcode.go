@@ -17,5 +17,9 @@ const (
 	RequiredAuthorizationHeader ErrCode = "A001"
 	CannotMakeValidator         ErrCode = "A002"
 	Unauthorizated              ErrCode = "A003"
-  NotMatchUser                ErrCode = "A004"
+	NotMatchUser                ErrCode = "A004"
+
+	OAuthExchangeFailed ErrCode = "O001"
+	OAuthInvaildToken   ErrCode = "O002"
+	OAuthStateMismatch  ErrCode = "O003"
 )

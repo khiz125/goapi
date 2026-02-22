@@ -2,16 +2,18 @@ package config
 
 import "os"
 
+const GoogleAuthURL = "https://accounts.google.com/o/oauth2/v2/auth"
+
 type GoogleAuthConfig struct {
-	AuthURL     string
-	ClientID    string
-	RedirectURI string
+	ClientID     string
+	ClientSecret string
+	RedirectURI  string
 }
 
 func LoadGoogleOAuthConfig() GoogleAuthConfig {
 	return GoogleAuthConfig{
-    AuthURL:      os.Getenv("GOOGLE_OAUTH_AUTH_URL"),
 		ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
+		ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
 		RedirectURI:  os.Getenv("GOOGLE_OAUTH_REDIRECT_URI"),
 	}
 }

@@ -33,6 +33,8 @@ func ErrorHandler(w http.ResponseWriter, req *http.Request, err error) {
 		statusCode = http.StatusUnauthorized
   case NotMatchUser:
     statusCode = http.StatusForbidden
+  case OAuthExchangeFailed, OAuthInvaildToken:
+    statusCode = http.StatusUnauthorized
 
 	default:
 		statusCode = http.StatusInternalServerError
